@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.example.cis183_homework02_rgb_slider_9_23_2023"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.cis183_homework02_rgb_slider_9_23_2023"

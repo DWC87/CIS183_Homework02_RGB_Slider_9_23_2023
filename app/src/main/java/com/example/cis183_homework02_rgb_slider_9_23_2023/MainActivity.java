@@ -6,6 +6,7 @@ package com.example.cis183_homework02_rgb_slider_9_23_2023;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -21,9 +22,8 @@ import java.util.ArrayList;
 
 
 
-/** @noinspection rawtypes*/
 public class MainActivity extends AppCompatActivity {
-
+    //variables
     SeekBar red_seek;
     SeekBar green_seek;
     SeekBar blue_seek;
@@ -33,234 +33,215 @@ public class MainActivity extends AppCompatActivity {
     TextView tvBlue;
     TextView showHex;
     ListView listView;
-    int redValue;
-    int greenValue;
-    int blueValue;
-
-    int i;
-    ArrayList<String> ColorInfo;
-    ArrayAdapter adapter;
-    ActivityMainBinding binding;
-
-
-
-    int red=255,blue=255,green=255;
-
+    ArrayList<ColorInfo> colorInfos;
+    ColorSwatchAdapter colorAdapter;
+    int red = 255;
+    int green = 255;
+    int blue = 255;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        red_seek    = findViewById(R.id.red_seek_bar);
-        green_seek  = findViewById(R.id.green_seek_bar);
-        blue_seek   = findViewById(R.id.blue_seek_bar);
-        set_color   = findViewById(R.id.btn_save_color);
-        tvRed       = findViewById(R.id.tv_red);
-        tvGreen     = findViewById(R.id.tv_green);
-        tvBlue      = findViewById(R.id.tv_blue);
-        showHex     = findViewById(R.id.hex_rep);
-        listView    = findViewById(R.id.lv_color_list);
-
-        ColorInfo colorInfo = new ColorInfo();
-
-
-        ColorInfo = new ArrayList<String>();
-
-        adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ColorInfo);
-
-
-
-
-
-
-
-        binding.tvRed.setText("Red:" + red);
-        binding.tvGreen.setText("Green:" + green);
-        binding.tvBlue.setText("Blue: "+ blue);
-        binding.Layout.setBackgroundColor(Color.rgb(red,green,blue));
-
-
-
-
-
+        red_seek = findViewById(R.id.red_seek_bar);
+        green_seek = findViewById(R.id.green_seek_bar);
+        blue_seek = findViewById(R.id.blue_seek_bar);
+        set_color = findViewById(R.id.btn_save_color);
+        tvRed = findViewById(R.id.tv_red);
+        tvGreen = findViewById(R.id.tv_green);
+        tvBlue = findViewById(R.id.tv_blue);
+        showHex = findViewById(R.id.hex_rep);
+        listView = findViewById(R.id.lv_color_list);
+        //connecting arraylist and adapter
+        colorInfos = new ArrayList<>();
+        colorAdapter = new ColorSwatchAdapter(this, colorInfos);
+        listView.setAdapter(colorAdapter);
 
         seekBars();
         colorButton();
+        updateUI();
+        listListener();
 
     }
-    //list items for listview.
-    public void fillList(){
-        //rgb to hex representation
+
+    private void updateUI()
+    {
+        //setting the background color and the text that displays the rgb value
+        tvRed.setText("Red: " + red);
+        tvGreen.setText("Green: " + green);
+        tvBlue.setText("Blue: " + blue);
+        findViewById(R.id.Layout).setBackgroundColor(Color.rgb(red, green, blue));
+    }
+
+    public void fillList(int red, int green, int blue)
+    {
+        colorInfos.add(new ColorInfo(red, green, blue));
+        colorAdapter.notifyDataSetChanged();
+    }
+
+    public void seekBars()
+    {
+        //all of my seekbars
+        //setting the text color to light/dark depending on the color so it is easily visible
+        red_seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b)
+            {
+                red = progress;
+                updateUI();
+                updateHexValue();
+
+                if(red<131&&green<131&&blue<131)
+                {
+                    tvRed.setTextColor(Color.WHITE);
+                    tvGreen.setTextColor(Color.WHITE);
+                    tvBlue.setTextColor(Color.WHITE);
+                    showHex.setTextColor(Color.WHITE);
+                }
+                else if(red>=132&&green>=132&&blue>=131)
+                {
+                    tvRed.setTextColor(Color.BLACK);
+                    tvGreen.setTextColor(Color.BLACK);
+                    tvBlue.setTextColor(Color.BLACK);
+                    showHex.setTextColor(Color.BLACK);
+                }
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        green_seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b)
+            {
+                green = progress;
+                updateUI();
+                updateHexValue();
+
+                if(red<131&&green<131&&blue<131)
+                {
+                    tvRed.setTextColor(Color.WHITE);
+                    tvGreen.setTextColor(Color.WHITE);
+                    tvBlue.setTextColor(Color.WHITE);
+                    showHex.setTextColor(Color.WHITE);
+                }
+                else if(red>=132&&green>=132&&blue>=131)
+                {
+                    tvRed.setTextColor(Color.BLACK);
+                    tvGreen.setTextColor(Color.BLACK);
+                    tvBlue.setTextColor(Color.BLACK);
+                    showHex.setTextColor(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        blue_seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b)
+            {
+                blue = progress;
+                updateUI();
+                updateHexValue();
+
+                if(red<131&&green<131&&blue<131)
+                {
+                    tvRed.setTextColor(Color.WHITE);
+                    tvGreen.setTextColor(Color.WHITE);
+                    tvBlue.setTextColor(Color.WHITE);
+                    showHex.setTextColor(Color.WHITE);
+                }
+                else if(red>=132&&green>=132&&blue>=131)
+                {
+                    tvRed.setTextColor(Color.BLACK);
+                    tvGreen.setTextColor(Color.BLACK);
+                    tvBlue.setTextColor(Color.BLACK);
+                    showHex.setTextColor(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+
+
+        });
+
+
+    }
+
+    private void updateHexValue()
+    {
+        //having the hex value change to represent the seekbar progress with rgb sliders in real time
         String hex = String.format("#%02X%02X%02X", red, green, blue);
-        String resultRed = "Red: "+ "" + redValue;
-        String resultGreen = "  Green: "+ "" + greenValue;
-        String resultBlue = "  Blue: "+ "" + blueValue;
-        String resultHex = "Hex: "+ hex;
-
-
-
-
-        //adding info to array
-        ColorInfo.add(resultRed + resultGreen + resultBlue + " " + resultHex);
-        listView.setBackgroundColor(Color.parseColor((hex)));
-        listView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-
-
-
-
-
-
-
+        showHex.setText("Hex representation: " + hex);
     }
-    //setting the color with three seekbars
-    public void seekBars(){
-        binding.redSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                red=progress;
-                binding.tvRed.setText("Red: " + red);
-                binding.Layout.setBackgroundColor(Color.rgb(red,green,blue));
-                String hex = String.format("#%02X%02X%02X", red, green, blue);
-
-                showHex.setText("Hex representation :" + hex.toString());
-
-                redValue = red;
-                //conditional statement to change the text to white when color is dark
-                if(red<131&&green<131&&blue<131){
-                    tvRed.setTextColor(Color.WHITE);
-                    tvGreen.setTextColor(Color.WHITE);
-                    tvBlue.setTextColor(Color.WHITE);
-                    showHex.setTextColor(Color.WHITE);
-                }
-                else if(red>=132&&green>=132&&blue>=131){
-                    tvRed.setTextColor(Color.BLACK);
-                    tvGreen.setTextColor(Color.BLACK);
-                    tvBlue.setTextColor(Color.BLACK);
-                    showHex.setTextColor(Color.BLACK);
-                }
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
 
 
-        binding.greenSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                green=progress;
-                binding.tvGreen.setText("Green: " + green);
-                binding.Layout.setBackgroundColor(Color.rgb(red,green,blue));
-                String hex = String.format("#%02X%02X%02X", red, green, blue);
-
-                showHex.setText("Hex representation :" + hex.toString());
-
-                greenValue = green;
-
-                if(red<131&&green<131&&blue<131){
-                    tvRed.setTextColor(Color.WHITE);
-                    tvGreen.setTextColor(Color.WHITE);
-                    tvBlue.setTextColor(Color.WHITE);
-                    showHex.setTextColor(Color.WHITE);
-                }
-                else if(red>=132&&green>=132&&blue>=131){
-                    tvRed.setTextColor(Color.BLACK);
-                    tvGreen.setTextColor(Color.BLACK);
-                    tvBlue.setTextColor(Color.BLACK);
-                    showHex.setTextColor(Color.BLACK);
-                }
-
-
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        binding.blueSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                blue=progress;
-                binding.tvBlue.setText("Blue: " + blue);
-                binding.Layout.setBackgroundColor(Color.rgb(red,green,blue));
-                String hex = String.format("#%02X%02X%02X", red, green, blue);
-
-                showHex.setText("Hex representation :" + hex.toString());
-
-                blueValue = blue;
-
-                if(red<131&&green<131&&blue<131){
-                    tvRed.setTextColor(Color.WHITE);
-                    tvGreen.setTextColor(Color.WHITE);
-                    tvBlue.setTextColor(Color.WHITE);
-                    showHex.setTextColor(Color.WHITE);
-                }
-                else if(red>=132&&green>=132&&blue>=131){
-                    tvRed.setTextColor(Color.BLACK);
-                    tvGreen.setTextColor(Color.BLACK);
-                    tvBlue.setTextColor(Color.BLACK);
-                    showHex.setTextColor(Color.BLACK);
-                }
-
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-
-
-    }    //making button fill the listview on click and reset the seekbars on click
-    public void colorButton(){
-
-        set_color.setOnClickListener(new View.OnClickListener() {
-
+    public void colorButton()
+    {
+        //resetting the seekbars and text after pressing the button
+        //calling fillList
+        set_color.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View view) {
-
-                fillList();
+                fillList(red, green, blue);
 
                 red_seek.setProgress(255);
                 green_seek.setProgress(255);
                 blue_seek.setProgress(255);
-
                 tvRed.setTextColor(Color.BLACK);
                 tvGreen.setTextColor(Color.BLACK);
                 tvBlue.setTextColor(Color.BLACK);
                 showHex.setTextColor(Color.BLACK);
+            }
+        });
 
+    }
 
+    public void listListener()
+    {
+        //onClickListener for listview items to display the color and seekbar progress for each list item
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                ColorInfo selectedColor = (ColorInfo) colorAdapter.getItem(position);
+
+                // Set the background color to the selected color
+                int selectedColorInt = Color.rgb(selectedColor.getRed(), selectedColor.getGreen(), selectedColor.getBlue());
+                findViewById(R.id.Layout).setBackgroundColor(selectedColorInt);
+
+                // Set the SeekBars to match the selected color
+                red_seek.setProgress(selectedColor.getRed());
+                green_seek.setProgress(selectedColor.getGreen());
+                blue_seek.setProgress(selectedColor.getBlue());
             }
         });
     }
-
 
 
 }
